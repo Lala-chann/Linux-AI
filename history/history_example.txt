@@ -1,0 +1,33 @@
+This file describes the format used by history/history.jsonl.
+
+
+FORMAT
+------
+Each line in history.jsonl is one complete, independent JSON object with
+three fields:
+ 
+  question   -> the exact text you passed to `ask`
+  answer     -> the exact text the model returned
+
+HOW IT'S DISPLAYED
+------------------
+Running `ask history` reads every line of history.jsonl and prints it in a
+numbered, human-readable format, e.g.:
+ 
+
+1. Q: how do I list files
+   A: Use ls -l to list files with details.
+   .
+   .
+   .
+==========================================
+
+2. Q: how can I use chmod with numbers like 777 or 567
+   A: chmod 755 file sets owner to read write execute, group and others to
+      read execute. The three digits represent owner, group, and other
+      permissions in that order.
+    .
+    .
+    .
+
+===========================================

@@ -107,10 +107,38 @@ No conversation state is kept between runs — each question is currently indepe
 - Not currently packaged for `pip install`; setup is manual (see Setup above).
 
 ---
+ 
+## History
+ 
+Every question and answer is automatically logged. To view your past conversations:
+ 
+```bash
+ask history
+```
+ 
+Output looks like:
+```
+1. Q: how do I list files
+   A: Use ls -l to list files with details.
+   .
+   .
+   .
+----------------------------------------
+
+ 
+### Where history is stored
+ 
+History is saved to `history/history.jsonl` inside the project folder, one JSON entry per line. This file is excluded from git (see `.gitignore`) — it stays local to your machine and is never pushed to GitHub.
+ 
+ 
+### Format reference
+ 
+See `history/history_example.txt` in this repo for a sample of what a `history.jsonl` entry looks like, without needing to run the tool first.
+ 
+
 
 ## Upcoming Features
 
-- [ ] **Conversation history** — remember previous questions/answers in a session so follow-up questions work (e.g., "now undo that").
 - [ ] **Consistent response format** — enforce single best-answer output by default, with an optional flag (e.g. `--options`) for multiple alternatives.
 - [ ] **Plain-text output enforcement** — instruct the model to avoid markdown syntax so output renders cleanly in a terminal.
 - [ ] **Error handling** — graceful messages for no internet connection, API rate limits, and invalid API keys instead of raw stack traces.
@@ -120,11 +148,3 @@ No conversation state is kept between runs — each question is currently indepe
 - [ ] **Packaging** — proper installable package (`pip install .`) instead of manual symlinking.
 
 ---
-
-## Contributing / Notes for future self
-
-If you're picking this project back up later: check `.gitignore` staging state and confirm `.env` never appears in `git status` before any commit or push — this project has previously hit issues where staged files were stale after mid-development fixes.
-
-## License
-
-Not yet specified.

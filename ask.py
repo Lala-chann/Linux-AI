@@ -7,11 +7,16 @@ sys.path.insert(0, script_dir)
 
 from groq import Groq
 from config import API_KEY, MODEL
+from history import save_entry, print_history
 
 def main():
     if len(sys.argv) < 2:
         print("Usage: ask \"your question\"")
         sys.exit(1)
+
+    if len(sys.argv) == 2 and sys.argv[1] == "history":
+        print_history()
+        return
 
     question = " ".join(sys.argv[1:])
     client = Groq(api_key=API_KEY)
@@ -23,7 +28,9 @@ def main():
             {"role": "user", "content": question}
         ]
     )
-    print(response.choices[0].message.content)
+    answer = response.choices[0].message.content
+    print(answer)
+    save_entry(question,answer)
 
 if __name__ == "__main__":
     main()
