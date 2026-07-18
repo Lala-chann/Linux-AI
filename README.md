@@ -19,53 +19,7 @@ Explanation: The rm command removes a file from the system, where filename is th
 - A [Groq API key](https://console.groq.com) (free tier available)
 - Linux (developed and tested on Ubuntu)
 ---
- 
-## Setup
- 
-1. Clone the repo:
-```bash
-   git clone https://github.com/yourusername/ai-cli.git
-   cd ai-cli
-```
- 
-2. Create and activate a virtual environment:
-```bash
-   python3 -m venv venv
-   source venv/bin/activate
-```
- 
-3. Install dependencies:
-```bash
-   pip install -r requirements.txt
-```
- 
-4. Set up your API key:
-```bash
-   cp .env.example .env
-```
-   Then open `.env` and add your key:
-```
-   GROQ_API_KEY=your_key_here
-```
- 
-5. Run it:
-```bash
-   python3 ask.py "how do I list files"
-```
- 
-### Optional: make it a global command
-So you can run `ask "..."` from any directory, not just inside the project folder:
- 
-```bash
-sudo ln -s "$(pwd)/ask.py" /usr/local/bin/ask
-```
- 
-**Important:** this only works if `ask.py`'s shebang line points to your venv's actual Python interpreter (not system Python), since the venv is what has `groq` and `python-dotenv` installed. Edit the first line of `ask.py` to match your own path:
-```
-#!/absolute/path/to/ai-cli/venv/bin/python3
-```
- 
----
+
  
 ## Project Structure
  
@@ -90,16 +44,14 @@ ai-cli/
 ├── .env.example                   # Template showing what .env should contain.
 └── README.md
 ```
- 
-**Why the split between `ask.py` and `config.py`:** keeping API-key/config loading separate from the main logic means the key-handling code (and its failure behavior) is isolated and easy to audit on its own, rather than mixed into the request logic.
- 
+
 ---
  
 ## How it works (brief)
  
 1. `ask.py` joins your CLI arguments into a single question string.
 2. If that argument is exactly `history`, it prints your saved question/answer log instead of calling the API.
-3. Otherwise, it sends the question to Groq's chat completion endpoint, with a system prompt instructing the model to act as a Linux CLI expert and explain commands rather than execute them.
+3. By default, every command and its explanation is automatically recorded in history. Over time, this can make the history cluttered and hard to read. Use `ask history clean` to clear your history whenever you no longer need it.
 4. The model's text response is printed to the terminal and appended to `history/history.jsonl`.
 No conversation state is fed back into future questions — each question is still answered independently (see "Upcoming Features").
  
@@ -115,42 +67,18 @@ ask history
  
 Output looks like:
 ```
-1. [2026-07-12T10:15:00]
-   Q: how do I list files
+1. Q: how do I list files
    A: Use ls -l to list files with details.
+   
 ----------------------------------------
-2. [2026-07-12T10:16:30]
-   Q: how can I use chmod with numbers
+2. Q: how can I use chmod with numbers
    A: chmod 755 file sets owner to read/write/execute, group and others to read/execute.
+
 ----------------------------------------
 ```
  
-### Where history is stored
- 
-History is saved to `history/history.jsonl` inside the project folder, one JSON entry per line. This file is excluded from git (see `.gitignore`) — it stays local to your machine and is never pushed to GitHub.
- 
-**Note:** because history lives inside the project folder rather than your home directory, it will not carry over if you move or re-clone the project onto another machine. This is a deliberate tradeoff for this project, not an oversight.
- 
-### Format reference
- 
-See `history/history_example.txt` in this repo for a sample of what a `history.jsonl` entry looks like, without needing to run the tool first.
- 
-### Limitation
- 
-`ask history` only *displays* past questions and answers — it does not feed that context back into future questions. Asking a follow-up like "now undo that" will not currently work, since each `ask` call is still independent. True conversational memory is a separate planned feature (see below).
- 
----
- 
-## Known Limitations (current version)
- 
-- No conversation memory — can't currently ask a follow-up like "now undo that" and have it retain context from prior questions.
-- Response format is inconsistent — sometimes returns one command, sometimes a list of several options, depending on how the model interprets the question.
-- Markdown formatting (`**bold**`) from the model isn't stripped, so raw asterisks may appear in terminal output.
-- No handling yet for network failures, rate limiting, or invalid/expired API keys — the script will just raise whatever error the underlying library throws.
-- `history/history.jsonl` grows indefinitely with no size limit or trimming.
-- Not currently packaged for `pip install`; setup is manual (see Setup above).
----
- 
+**Note:** Detailed information about history is available in `history/history.txt`.
+
 ## Upcoming Features
  
 - [ ] **Conversation memory** — feed previous exchanges back to the model as context so follow-up questions like "now undo that" work correctly. (Distinct from the History feature above, which only logs and displays — it doesn't influence future answers.)

@@ -1,0 +1,2 @@
+1.shabing problem. it is hardcoding so only open inside owner program 2.ask command did not work insdie /usr/bin
+3. Shell state commands must be executed in the parent process. My project (ask) runs inside a child process, so any shell state changes made there cannot affect the parent process.

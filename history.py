@@ -39,4 +39,17 @@ def print_history():
         print(f"   A: [{entry['answer']}]")
         print("=" * 70)
 
+def clear_history():
+    confirm = input("This will permanently delete all saved history. Continue? [y/N]: ").strip().lower()
+    if confirm != "y":
+        print("Cancelled.")
+        return
+    
+    if os.path.exists(HISTORY_FILE):
+        os.remove(HISTORY_FILE)
+        print("History cleared.")
+    else:
+        print("No history file to clear.")
+
+
 
